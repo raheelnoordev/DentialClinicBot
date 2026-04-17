@@ -1,0 +1,2382 @@
+{
+  "name": "Dental Clinic WhatsApp-bot-raheel",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "id": "c728b244-4717-4869-bb99-6b70c72c2ffc",
+      "name": "RecieveMessage",
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        1136
+      ],
+      "webhookId": "a930d181-6ec4-4987-9b23-21c775f73729",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "HYOolcsOl081WMkl",
+          "name": "ReciveMessageTrigger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "wa_id",
+              "type": "string",
+              "value": "={{ ($json.contacts && $json.contacts[0] ? $json.contacts[0].wa_id : ($json.messages && $json.messages[0] ? $json.messages[0].from : '')).replace(/\\D/g, '') }}"
+            },
+            {
+              "id": "a2",
+              "name": "msg_type",
+              "type": "string",
+              "value": "={{ $json.messages && $json.messages[0] ? $json.messages[0].type : '' }}"
+            },
+            {
+              "id": "a3",
+              "name": "interactive_type",
+              "type": "string",
+              "value": "={{ $json.messages && $json.messages[0] && $json.messages[0].interactive ? $json.messages[0].interactive.type : '' }}"
+            },
+            {
+              "id": "a4",
+              "name": "button_reply_id",
+              "type": "string",
+              "value": "={{ $json.messages && $json.messages[0] && $json.messages[0].interactive && $json.messages[0].interactive.button_reply ? $json.messages[0].interactive.button_reply.id : '' }}"
+            },
+            {
+              "id": "a5",
+              "name": "list_reply_id",
+              "type": "string",
+              "value": "={{ $json.messages && $json.messages[0] && $json.messages[0].interactive && $json.messages[0].interactive.list_reply ? $json.messages[0].interactive.list_reply.id : '' }}"
+            },
+            {
+              "id": "a6",
+              "name": "list_reply_title",
+              "type": "string",
+              "value": "={{ $json.messages && $json.messages[0] && $json.messages[0].interactive && $json.messages[0].interactive.list_reply ? $json.messages[0].interactive.list_reply.title : '' }}"
+            },
+            {
+              "id": "a7",
+              "name": "text_body",
+              "type": "string",
+              "value": "={{ $json.messages && $json.messages[0] && $json.messages[0].text ? $json.messages[0].text.body : '' }}"
+            },
+            {
+              "id": "a8",
+              "name": "button_text",
+              "type": "string",
+              "value": "={{ $json.messages && $json.messages[0] && $json.messages[0].button ? $json.messages[0].button.text : '' }}"
+            },
+            {
+              "id": "a9",
+              "name": "button_payload",
+              "type": "string",
+              "value": "={{ $json.messages && $json.messages[0] && $json.messages[0].button ? $json.messages[0].button.payload : \"\" }}"
+            },
+            {
+              "id": "a10",
+              "name": "list_reply_description",
+              "type": "string",
+              "value": "={{ $json.messages && $json.messages[0] && $json.messages[0].interactive && $json.messages[0].interactive.list_reply ? $json.messages[0].interactive.list_reply.description : \"\" }}"
+            },
+            {
+              "id": "a11",
+              "name": "audio_id",
+              "type": "string",
+              "value": "={{ $json.messages && $json.messages[0] && $json.messages[0].audio ? $json.messages[0].audio.id : \"\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5032eb1f-bb0a-40f9-8868-cfe37455d717",
+      "name": "ExtractFields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1472,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO user_state (wa_id) VALUES ('{{ $(\"ExtractFields\").first().json.wa_id }}') ON CONFLICT (wa_id) DO UPDATE SET updated_at = NOW() RETURNING *;",
+        "options": {}
+      },
+      "id": "c299f7d6-9f62-434d-a8d6-a0751f9351db",
+      "name": "InitUserState",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        -1280,
+        1136
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "wa_id",
+              "type": "string",
+              "value": "={{ $('ExtractFields').first().json.wa_id }}"
+            },
+            {
+              "id": "b2",
+              "name": "msg_type",
+              "type": "string",
+              "value": "={{ $('ExtractFields').first().json.msg_type }}"
+            },
+            {
+              "id": "b3",
+              "name": "interactive_type",
+              "type": "string",
+              "value": "={{ $('ExtractFields').first().json.interactive_type }}"
+            },
+            {
+              "id": "b4",
+              "name": "button_reply_id",
+              "type": "string",
+              "value": "={{ $('ExtractFields').first().json.button_reply_id }}"
+            },
+            {
+              "id": "b5",
+              "name": "list_reply_id",
+              "type": "string",
+              "value": "={{ $('ExtractFields').first().json.list_reply_id }}"
+            },
+            {
+              "id": "b6",
+              "name": "list_reply_title",
+              "type": "string",
+              "value": "={{ $('ExtractFields').first().json.list_reply_title }}"
+            },
+            {
+              "id": "b7",
+              "name": "text_body",
+              "type": "string",
+              "value": "={{ $('ExtractFields').first().json.text_body }}"
+            },
+            {
+              "id": "b8",
+              "name": "state",
+              "type": "string",
+              "value": "={{ $json.state || 'IDLE' }}"
+            },
+            {
+              "id": "b9",
+              "name": "selected_treatment",
+              "type": "string",
+              "value": "={{ $json.selected_treatment || '' }}"
+            },
+            {
+              "id": "b10",
+              "name": "selected_date_label",
+              "type": "string",
+              "value": "={{ $json.selected_date_label || '' }}"
+            },
+            {
+              "id": "b11",
+              "name": "selected_day",
+              "type": "string",
+              "value": "={{ $json.selected_day || '' }}"
+            },
+            {
+              "id": "b12",
+              "name": "selected_time",
+              "type": "string",
+              "value": "={{ $json.selected_time || '' }}"
+            },
+            {
+              "id": "b13",
+              "name": "selected_slot_id",
+              "type": "string",
+              "value": "={{ $json.selected_slot_id || '' }}"
+            },
+            {
+              "id": "b14",
+              "name": "collected_name",
+              "type": "string",
+              "value": "={{ $json.collected_name || '' }}"
+            },
+            {
+              "id": "b15",
+              "name": "button_text",
+              "type": "string",
+              "value": "={{ $('ExtractFields').first().json.button_text }}"
+            },
+            {
+              "id": "b16",
+              "name": "button_payload",
+              "type": "string",
+              "value": "={{ $('ExtractFields').first().json.button_payload }}"
+            },
+            {
+              "id": "b17",
+              "name": "list_reply_description",
+              "type": "string",
+              "value": "={{ $('ExtractFields').first().json.list_reply_description }}"
+            },
+            {
+              "id": "b18",
+              "name": "audio_id",
+              "type": "string",
+              "value": "={{ $('ExtractFields').first().json.audio_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cc7e76e1-3cf5-4c28-8289-b9a6864e6e79",
+      "name": "BuildContext",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const msg = $input.first().json;\n\n// 0. IGNORE SYSTEM NOTIFICATIONS (Delivered, Sent, etc.)\nif (!msg.msg_type && !msg.interactive_type && !msg.button_reply_id && !msg.text_body) {\n  return []; // Stop processing for empty or status webhooks\n}\n\nconst state = msg.state || 'IDLE';\nconst mt = msg.msg_type;\nlet bid = msg.button_reply_id || '';\nlet lid = msg.list_reply_id || '';\nlet lTitle = msg.list_reply_title || '';\nlet textBody = (msg.text_body || '').trim();\nlet bText = msg.button_text || '';\nlet bPayload = msg.button_payload || '';\n\nif(bPayload){ bid = bPayload; textBody = bText; }\n\nlet route = 'WELCOME';\nconst normTitle = String(lTitle + ' ' + textBody).toLowerCase();\n\n// 1. GREETING CHECK (Priority for Welcome Menu)\nconst greetings = ['hi', 'hello', 'hey', 'start', 'menu', 'aslam', 'asalam', 'salaam'];\nconst isGreeting = (mt === 'text' || mt === 'button') && (greetings.some(g => normTitle.split(/\\s+/).includes(g)) || textBody.length <= 3);\n\nconst isMenu = String(bid).toLowerCase().includes('menu') || \n               String(textBody).toLowerCase().includes('menu') || \n               String(bText).toLowerCase().includes('menu') || \n               String(bPayload).toLowerCase().includes('menu');\n\nconst isPositive = normTitle.includes('confirm') || normTitle.includes('yes') || bid === 'yes_confirm';\n\n// Time slot: title looks like \"10:00\" or \"14:30\"\nconst isTimeSlot = /^\\d{1,2}:\\d{2}/.test(lTitle.trim());\n\n// Main menu categories\nconst isMainMenuBook = normTitle.includes('book appointment') || normTitle.includes('book your');\nconst isMainMenuTreatments = normTitle === 'treatments' || normTitle === 'browse our services';\nconst isMainMenuDoctor = normTitle.includes('talk to doctor') || normTitle.includes('doctor contact');\nconst isMainMenuTimings = normTitle.includes('clinic timing') || normTitle.includes('location');\n\n// 2. TEXT/BUTTON HANDLING\nif (mt === 'text' || mt === 'button') {\n  if (isGreeting) {\n    route = 'WELCOME';\n  }\n  else if (state === 'AWAITING_NAME' || (state === 'IDLE' && textBody.length > 5 && !isMainMenuBook && !isMenu)) {\n     route = 'SAVE_NAME';\n  }\n  else if (state === 'CONFIRMING' && isPositive) route = 'SAVE_PHONE';\n  else if (bid === 'yes_confirm') route = 'SAVE_PHONE';\n  else if (isMenu) route = 'SHOW_MENU';\n  else if (normTitle.includes('book')) route = 'SHOW_TREATMENTS';\n  else if (normTitle.includes('doctor')) route = 'DOCTOR_CONTACT';\n  else if (normTitle.includes('timing') || normTitle.includes('location')) route = 'CLINIC_TIMINGS';\n  else if (normTitle.includes('cancel')) route = 'CANCEL';\n  else if (state === 'IDLE' && textBody.length > 3) {\n    route = 'GPT_RESPONSE'; // Default fallback for long text\n  }\n}\n\nif (mt === 'interactive') {\n  if (msg.interactive_type === 'button_reply') {\n    if (bid === 'yes_confirm') route = 'SAVE_PHONE';\n    else if (isMenu || bid === 'show_menu') route = 'SHOW_MENU';\n    else if (bid === 'view_treatments') route = 'SHOW_TREATMENTS';\n    else if (bid === 'cancel') route = 'CANCEL';\n    else if (bid === 'submit_contact') route = 'SAVE_NAME';\n  } else if (msg.interactive_type === 'list_reply') {\n    if (state === 'SELECTING_TREATMENT') route = 'SHOW_DATETIME';\n    else if (state === 'SELECTING_DATETIME') route = 'SHOW_CONFIRMATION';\n    else if (state === 'IDLE' || state === 'CONFIRMING' || state === 'AWAITING_NAME') {\n      if (isTimeSlot) route = 'SHOW_CONFIRMATION';\n      else if (isMainMenuBook) route = 'SHOW_TREATMENTS';\n      else if (isMainMenuDoctor) route = 'DOCTOR_CONTACT';\n      else if (isMainMenuTimings) route = 'CLINIC_TIMINGS';\n      else route = 'SHOW_DATETIME';\n    }\n  }\n}\n\nif (isMenu && route === 'WELCOME') route = 'SHOW_MENU';\n\nreturn [{json: {...msg, route}}];"
+      },
+      "id": "278b2f40-5a73-497a-a953-277348c807b8",
+      "name": "DetermineRoute",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        1136
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "WELCOME",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b5bcb705-28a5-4198-9420-51a2c9e8a40e"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "SHOW_MENU",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "1099bfc4-f603-4f40-9c37-248ce1377d90"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "BOOK_APPOINTMENT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "eac984a9-ac0e-4bd9-b85f-c0fe719d690d"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "SHOW_TREATMENTS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "86b6985f-b048-418e-9c3e-a693ebe62ade"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "SHOW_DATETIME",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "9484e32c-5638-49bf-9262-94ae771ebbd2"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "SHOW_CONFIRMATION",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "84caa043-5f52-45ae-8675-62e436ae441d"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "ASK_NAME",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "4889cd77-4518-4689-bc33-b507484485a4"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "SAVE_NAME",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "44888cdb-9efe-4114-92ee-4199c6a7e17b"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "SAVE_PHONE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0d9ffc79-72eb-43ed-b5bd-5991a386611c"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "CANCEL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "9642149c-a587-41a0-bd13-46a835094a13"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "TREATMENTS_INFO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "63c73454-8c67-4db0-8b51-b964bc9f6fb0"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "DOCTOR_CONTACT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "ebc168e4-7284-4139-89b8-c0232a29070c"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "CLINIC_TIMINGS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0af5b581-98c8-49a6-8829-c455881ee456"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "GPT_RESPONSE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "gpt_route_id"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d9fb1f5b-f9a7-4b08-93fa-eb58ab4ccb1d",
+      "name": "Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -480,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE user_state SET state = 'IDLE', selected_treatment = '', selected_date_label = '', selected_day = '', selected_time = '', selected_slot_id = '', collected_name = '', collected_phone = '', last_payload = '' WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}' RETURNING *;",
+        "options": {}
+      },
+      "id": "cc077520-9be1-4164-a79f-41577f788bf1",
+      "name": "ResetState_Welcome",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        336
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, title, description FROM main_menu ORDER BY id ASC;",
+        "options": {}
+      },
+      "id": "18a85b56-4c4b-4257-86ee-a9a00bc25193",
+      "name": "FetchMainMenu",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        544
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst wa_id = $(\"BuildContext\").first().json.wa_id;\n\n// Use rows from DB if available, otherwise provide fallback defaults\nlet menuRows = [];\nif (items.length > 0 && items[0].json.id) {\n  menuRows = items.map(i => ({\n    id: String(i.json.id).substring(0, 200),\n    title: String(i.json.title || \"Option\").substring(0, 24),\n    description: String(i.json.description || \"\").substring(0, 72)\n  }));\n} else {\n  // Fallback items if main_menu table is empty/missing\n  menuRows = [\n    { id: 'book_appt', title: '📅 Book Appointment', description: 'Schedule your visit' },\n    { id: 'treatments', title: '🦷 Our Treatments', description: 'Browse our services' },\n    { id: 'doctor', title: '📞 Talk to Doctor', description: 'Contact clinic' },\n    { id: 'timings', title: '⏰ Clinic Info', description: 'Location and Timings' }\n  ];\n}\n\nconst payload = {\n  messaging_product: \"whatsapp\",\n  to: wa_id,\n  type: \"interactive\",\n  interactive: {\n    type: \"list\",\n    header: { type: \"text\", text: \"Dental Care Clinic 🦷\" },\n    body: { text: \"How can I help you today? Please select an option below.\" },\n    footer: { text: \"Dental Care Clinic Pakistan\" },\n    action: {\n      button: \"View Menu\",\n      sections: [{\n        title: \"Main Menu\",\n        rows: menuRows.slice(0, 10)\n      }]\n    }\n  }\n};\n\nreturn [{ json: payload }];"
+      },
+      "id": "a1409384-d110-40e1-8c1f-b57f2752616a",
+      "name": "BuildMenuPayload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        544
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v18.0/1018860684640594/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "{\"messaging_product\": \"whatsapp\", \"to\": \"={{ $json.wa_id }}\", \"type\": \"interactive\", \"interactive\": {\"type\": \"button\", \"header\": {\"type\": \"text\", \"text\": \"Book Appointment \\ud83d\\udcc5\"}, \"body\": {\"text\": \"Great! \\ud83d\\ude0a Which treatment would you like to book?\"}, \"footer\": {\"text\": \"Dental Care Clinic Pakistan\"}, \"action\": {\"buttons\": [{\"type\": \"reply\", \"reply\": {\"id\": \"view_treatments\", \"title\": \"\\ud83e\\uddb7 View Treatments\"}}]}}}",
+        "options": {}
+      },
+      "id": "cff7334a-6ca9-4658-84a1-5060de03ba64",
+      "name": "SendBookAppointment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -80,
+        736
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_state WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}';",
+        "options": {}
+      },
+      "id": "aebe0c92-5f76-4cf3-87e1-498e32253cfc",
+      "name": "UpdateSelectingTreatment",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        736
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, title, description FROM treatment ORDER BY id ASC;",
+        "options": {}
+      },
+      "id": "0f89274c-915b-4423-a75f-98bdc6931a52",
+      "name": "FetchTreatments",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        944
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst wa_id = $(\"BuildContext\").first().json.wa_id;\n\n// Use treatments from DB if available, otherwise provide common fallbacks\nlet treatmentRows = [];\nif (items.length > 0 && items[0].json.id) {\n  treatmentRows = items.map(i => ({\n    id: String(i.json.id).substring(0, 200),\n    title: String(i.json.title || \"Treatment\").substring(0, 24),\n    description: String(i.json.description || \"\").substring(0, 72)\n  }));\n} else {\n  // Default fallback treatments\n  treatmentRows = [\n    { id: 'scaling', title: 'Scaling & Polishing', description: 'Basic dental cleaning' },\n    { id: 'filling', title: 'Dental Filling', description: 'Cavity restoration' },\n    { id: 'extraction', title: 'Tooth Extraction', description: 'Safe tooth removal' },\n    { id: 'whitening', title: 'Teeth Whitening', description: 'Brighten your smile' }\n  ];\n}\n\nconst payload = {\n  messaging_product: \"whatsapp\",\n  to: wa_id,\n  type: \"interactive\",\n  interactive: {\n    type: \"list\",\n    header: { type: \"text\", text: \"Available Treatments 🦷\" },\n    body: { text: \"Please select the treatment you would like to book:\" },\n    footer: { text: \"Dental Care Clinic Pakistan\" },\n    action: {\n      button: \"Select Treatment\",\n      sections: [{\n        title: \"Treatments\",\n        rows: treatmentRows.slice(0, 10)\n      }]\n    }\n  }\n};\n\nreturn [{ json: payload }];"
+      },
+      "id": "e168e041-d349-4d62-a8be-3088d80c0d40",
+      "name": "BuildTreatmentsPayload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        944
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v18.0/1018860684640594/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "f45d70e8-84cf-4046-a953-c380adabe20c",
+      "name": "SendTreatmentsList",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        944
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE user_state SET state = 'SELECTING_DATETIME', selected_treatment = '{{ $(\"BuildContext\").first().json.list_reply_title }}', last_payload = '{{ JSON.stringify($(\"BuildMenuPayload\").first().json) }}' WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}' RETURNING *;",
+        "options": {}
+      },
+      "id": "9d2858ed-b44d-4056-8d89-c57d620505ce",
+      "name": "SaveTreatmentState",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        1136
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, date_label, day_name, time_label, booked FROM time_slots WHERE booked = false ORDER BY id ASC;",
+        "options": {}
+      },
+      "id": "fdb2b17c-cee8-4e89-8de6-c627e9de6dca",
+      "name": "FetchAvailableSlots",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        1136
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "route_check_id",
+              "leftValue": "={{ $(\"DetermineRoute\").first().json.route }}",
+              "rightValue": "SHOW_DATETIME",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9eb7c3ac-1a17-4ec0-91d0-49d0ff5b81bf",
+      "name": "MenuRoutingSwitch",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        656
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst wa_id = $(\"BuildContext\").first().json.wa_id;\n\n// Filter for slots that are NOT booked\nconst availableItems = items.filter(i => {\n  const booked = i.json.booked;\n  if (booked === true || String(booked).toUpperCase() === \"TRUE\" || String(booked).trim() === \"1\") {\n    return false;\n  }\n  return !!i.json.time_label && !!i.json.id;\n});\n\n// If no available slots found\nif (availableItems.length === 0) {\n  const payload = {\n    messaging_product: \"whatsapp\",\n    to: wa_id,\n    type: \"text\",\n    text: { body: \"Sorry, all slots are currently booked! 🦷 Please check back later or call us directly.\" }\n  };\n  return [{ json: payload }];\n}\n\nconst groups = {};\navailableItems.forEach(i => {\n  const data = i.json;\n  const k = data.date_label || \"No Date\";\n  const day = data.day_name || \"\";\n  const time = data.time_label || \"No Time\";\n  const sid = data.id || \"slot\";\n\n  if (!groups[k]) groups[k] = { title: String(k + \" (\" + day + \")\").substring(0, 24), rows: [] };\n  if (groups[k].rows.length < 10) {\n    groups[k].rows.push({\n      id: String(sid).substring(0, 200),\n      title: String(time).substring(0, 24),\n      description: String(k + \", \" + day).substring(0, 72)\n    });\n  }\n});\n\nconst sections = Object.values(groups).slice(0, 10);\nconst payload = {\n  messaging_product: \"whatsapp\",\n  to: wa_id,\n  type: \"interactive\",\n  interactive: {\n    type: \"list\",\n    header: { type: \"text\", text: \"Select Date & Time 📅\" },\n    body: { text: \"Great! Please select your preferred date and time for the appointment.\" },\n    footer: { text: \"Dental Care Clinic Pakistan\" },\n    action: { button: \"Select Slot\", sections }\n  }\n};\n\nreturn [{ json: payload }];"
+      },
+      "id": "b2378f0f-59c0-4cb9-85b6-9eb3d84385da",
+      "name": "BuildSlotsPayload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        1136
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v18.0/1018860684640594/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "9cbd02f4-02a6-4657-95fd-1579508f15e9",
+      "name": "SendDateTimeList",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        528,
+        1136
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE user_state SET state = 'AWAITING_NAME', selected_slot_id = '{{ $(\"BuildContext\").first().json.list_reply_id }}', selected_time = '{{ $(\"BuildContext\").first().json.list_reply_title }}', selected_date_label = '{{ $(\"BuildContext\").first().json.list_reply_description.split(\",\")[0] }}' WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}' RETURNING *;",
+        "options": {}
+      },
+      "id": "41aaf09a-6881-4834-88f4-09e2302b036c",
+      "name": "SaveSlotState",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        1344
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE time_slots SET booked = true WHERE id = '{{ $(\"BuildContext\").first().json.list_reply_id }}' RETURNING *;",
+        "options": {}
+      },
+      "id": "a92296f7-f181-4aa9-82b0-a8d1ad3a0996",
+      "name": "InstantLockSlot",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        96,
+        1344
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE user_state SET last_payload = '{{ $(\"BuildConfirmPayload\").first().json.payload }}' WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}' RETURNING *;",
+        "options": {}
+      },
+      "id": "1893b897-7cd2-422f-95f3-2a7f5a00f115",
+      "name": "SaveConfirmState",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        -480,
+        1344
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_state WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}';",
+        "options": {}
+      },
+      "id": "786cb3e4-c063-4131-9680-4214a9184506",
+      "name": "GetStateForConfirm",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        1376
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const wa = $(\"BuildContext\").first().json;\n// Use Lookup data with fallbacks to avoid 'Patient' or empty values\nconst gs = $(\"GetStateForConfirm\").first().json || {};\nconst name = gs.collected_name || wa.collected_name || 'Patient';\nconst phone = wa.wa_id;\nconst date = gs.selected_date_label || wa.selected_date_label || '';\nconst time = gs.selected_time || wa.selected_time || '';\n\nconst txt = \"Great! 😊\\n\" + name + \" , Your Appointment is booked!\\nSee you soon at clinic!\\nThank you\\n\\n*Your Contact Number :* \" + phone + \"\\n*Your Time :* \" + date + \" at \" + time + \" .\\n\\nPlease confirm it !\";\n\nconst body = {\n  messaging_product: \"whatsapp\",\n  to: wa.wa_id.toString(),\n  type: \"interactive\",\n  interactive: {\n    type: \"button\",\n    body: { text: txt },\n    action: {\n      buttons: [\n        {\n          type: \"reply\",\n          reply: { id: \"yes_confirm\", title: \"Yes, Confirm\" }\n        }\n      ]\n    }\n  }\n};\n\nreturn [{ json: { payload: JSON.stringify(body) } }];"
+      },
+      "id": "efd68b9d-7ca9-4552-b841-3a1ae326b3a0",
+      "name": "BuildConfirmPayload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        1360
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v18.0/1018860684640594/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.payload }}",
+        "options": {}
+      },
+      "id": "7af2bd1c-5d05-42a7-8b46-21d11328912e",
+      "name": "SendConfirmation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        736,
+        1344
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE user_state SET state = 'AWAITING_NAME', last_payload = '{{ $(\"BuildContext\").first().json.last_payload }}' WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}' RETURNING *;",
+        "options": {}
+      },
+      "id": "edbe9ce0-e7e3-4ba8-9748-58fec8351734",
+      "name": "UpdateAwaitingName",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        1536
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=1018860684640594",
+        "recipientPhoneNumber": "={{ $('BuildContext').first().json.wa_id }}",
+        "textBody": "Great! 😊 Please provide your *full name* to complete the booking.",
+        "additionalFields": {}
+      },
+      "id": "a5c29881-7c95-4dd2-84e5-a507b806527d",
+      "name": "SendContactForm",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        1536
+      ],
+      "webhookId": "2176a97e-455c-46cf-afbf-a3755df7292f",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE user_state SET collected_name = '{{ ($(\"ExtractFields\").first().json.text_body || \"\").trim() }}', state = 'CONFIRMING', last_payload = '{{ $(\"BuildContext\").first().json.last_payload }}' WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}' RETURNING *;",
+        "options": {}
+      },
+      "id": "55ea3d67-a9be-4d8d-b183-48f18bab7f35",
+      "name": "SaveNameState",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        1744
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=1018860684640594",
+        "recipientPhoneNumber": "={{ $('BuildContext').first().json.wa_id }}",
+        "textBody": "Thank you *{{ $('BuildContext').first().json.collected_name || $('BuildContext').first().json.text_body }}*! 🙏\n\nPlease share your *phone number* to complete the booking.",
+        "additionalFields": {}
+      },
+      "id": "6373c524-d99d-4ef9-943d-fcbd702ce042",
+      "name": "AskForPhone",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        1744
+      ],
+      "webhookId": "14b258f7-ad08-4603-9f71-b2539b08295d",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_state WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}';",
+        "options": {}
+      },
+      "id": "479e5050-c938-496d-9644-572ae33c7b2f",
+      "name": "CheckDuplicatePhone",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        1936
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_state WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}';",
+        "options": {}
+      },
+      "id": "fa95055a-8fde-4ead-9630-6dd8fe01ef23",
+      "name": "GetStateForBooking",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        1936
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_state WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}';",
+        "options": {}
+      },
+      "id": "adae628d-a861-478a-a8f5-2e3129dd69ce",
+      "name": "AppendAppointment",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        1936
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_state WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}';",
+        "options": {}
+      },
+      "id": "30141a48-089e-4623-b759-4345fe162769",
+      "name": "MarkSlotBooked",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        1936
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $('CheckDuplicatePhone').all().length }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "24b1f407-f26e-473e-b86f-5b4a2f264e7e",
+      "name": "IsReturningClient",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        1936
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=1018860684640594",
+        "recipientPhoneNumber": "={{ $('BuildContext').first().json.wa_id }}",
+        "textBody": "Welcome back! 🙌 You are already in our system.\n\n✅ *Appointment Confirmed!*\nTreatment: *{{ $('GetStateForBooking').first().json.selected_treatment }}*\nDate & Time: *{{ $('GetStateForBooking').first().json.selected_time }}*\n\nWe look forward to seeing you! 🦷\n\nTap *Main Menu* to start over.",
+        "additionalFields": {}
+      },
+      "id": "be131c5d-0ddf-4a84-8b46-9e5eb2db111e",
+      "name": "SendSuccessReturning",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1184,
+        1840
+      ],
+      "webhookId": "25631802-9bf2-4cdf-b776-083da35ade72",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=1018860684640594",
+        "recipientPhoneNumber": "={{ $('BuildContext').first().json.wa_id }}",
+        "textBody": "✅ *Appointment Confirmed!*\n\nTreatment: *{{ $('GetStateForBooking').first().json.selected_treatment }}*\nDate & Time: *{{ $('GetStateForBooking').first().json.selected_time }}*\n\nThank you! We look forward to seeing you. 🦷\n\nTap *Main Menu* to start over.",
+        "additionalFields": {}
+      },
+      "id": "6144cc21-b341-4d80-abb4-b34fcdd32a44",
+      "name": "SendSuccessNew",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1184,
+        2096
+      ],
+      "webhookId": "160a645b-5d3e-4821-8b5d-49ee2b8f7ada",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_state WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}';",
+        "options": {}
+      },
+      "id": "2ebe6436-2044-48b2-99f6-397fb10db206",
+      "name": "ResetState_Returning",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        1424,
+        1840
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_state WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}';",
+        "options": {}
+      },
+      "id": "0003effd-9241-4cdf-a844-6b2cfadffabd",
+      "name": "ResetState_New",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        1424,
+        2096
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v18.0/1018860684640594/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "{\"messaging_product\": \"whatsapp\", \"to\": \"={{ $json.wa_id }}\", \"type\": \"interactive\", \"interactive\": {\"type\": \"button\", \"body\": {\"text\": \"No problem! \\ud83d\\udc4c Your booking has been cancelled.\\n\\nWhenever you are ready, tap *Menu* to start again.\"}, \"footer\": {\"text\": \"Dental Care Clinic Pakistan\"}, \"action\": {\"buttons\": [{\"type\": \"reply\", \"reply\": {\"id\": \"main_menu\", \"title\": \"\\u2630 Main Menu\"}}]}}}",
+        "options": {}
+      },
+      "id": "2b173a42-7e7e-44ba-9c3b-76103eaad865",
+      "name": "SendCancelMessage",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -80,
+        2240
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_state WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}';",
+        "options": {}
+      },
+      "id": "c242f7bb-f329-4886-ad37-36b09daccd18",
+      "name": "ResetState_Cancel",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        2240
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=1018860684640594",
+        "recipientPhoneNumber": "={{ $('BuildContext').first().json.wa_id }}",
+        "textBody": "🦷 *Our Treatments*\n\n1. Dental Checkup - General exam\n2. Teeth Whitening - Professional whitening\n3. Braces Consultation - Orthodontic assessment\n4. Fillings - Tooth restoration\n5. Root Canal Treatment - Deep cleaning & sealing\n6. Scale & Polish - Cleaning & polishing\n7. Wisdom Tooth Removal - Surgical extraction\n\nFor pricing, please visit the clinic or contact reception.\nReply *Menu* anytime to return.",
+        "additionalFields": {}
+      },
+      "id": "a066426f-2a34-4a27-8c18-010c58361add",
+      "name": "SendTreatmentsInfo",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -80,
+        2448
+      ],
+      "webhookId": "5c0bc96c-839f-4fad-8300-45b2b406965d",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=1018860684640594",
+        "recipientPhoneNumber": "={{ $('BuildContext').first().json.wa_id }}",
+        "textBody": "👨‍⚕️ *Talk to our Doctor*\n\nYou can reach our dental team directly:\n\n📞 Phone: +92 317 4945789\n📍 Location: Dental Care Clinic, Pakistan\n⏰ Hours: Mon–Sat, 10:00 AM – 8:00 PM\n\nReply *Menu* anytime to return.",
+        "additionalFields": {}
+      },
+      "id": "03b23045-5761-4e3e-a130-17dffff5338a",
+      "name": "SendDoctorContact",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -80,
+        2640
+      ],
+      "webhookId": "ae6716b4-f588-4828-933c-5343df36b375",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=1018860684640594",
+        "recipientPhoneNumber": "={{ $('BuildContext').first().json.wa_id }}",
+        "textBody": "⏰ *Clinic Timings & Location*\n\nMonday – Saturday: 10:00 AM – 8:00 PM\nSunday: Closed\n\n📍 *Location:* Dental Care Clinic, Pakistan\n📞 *Phone:* +92 317 4945789\n\nWalk-ins welcome, but appointments are recommended.\nReply *Menu* anytime to return.",
+        "additionalFields": {}
+      },
+      "id": "f59a70c4-b612-4305-9826-a151efac563f",
+      "name": "SendClinicTimings",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -80,
+        2848
+      ],
+      "webhookId": "200b7a51-571e-49d6-9473-769e4a41691f",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "1018860684640594",
+        "recipientPhoneNumber": "={{ $('ExtractFields').first().json.wa_id }}",
+        "template": "wellcome_dential_clinic|en"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -80,
+        144
+      ],
+      "id": "4805266b-0283-45a8-a872-dea6f02e3fe6",
+      "name": "wellcomeMessage",
+      "webhookId": "b67bd1ef-70e3-4f0f-8335-8698e9051849",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v18.0/1018860684640594/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        544
+      ],
+      "id": "398b3ab7-1e0f-408b-8c41-9c2c003ebde3",
+      "name": "SendMainMenu",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_state WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}';",
+        "options": {}
+      },
+      "id": "09c80cdf-87ad-4865-b8fa-7965f0a040e3",
+      "name": "SaveMainMenuState",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        544
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v18.0/1018860684640594/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $('ExtractFields').first().json.wa_id }}\",\n  \"type\": \"text\",\n  \"text\": {\n    \"body\": \"Welcome to Dental Care Clinic 🦷\\n\\nHello! I am your Clinic Assistant.\\nHow can I help you today?\\n\\nTap Menu below to get started.\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -160,
+        368
+      ],
+      "id": "8cdb7436-4ba1-48ae-9df5-f77af014d9e2",
+      "name": "HTTP Request",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=1018860684640594",
+        "recipientPhoneNumber": "={{ $('BuildContext').first().json.wa_id }}",
+        "textBody": "={{ 'Great! ' + ($('GetStateForBooking').first().json.collected_name || $('GetStateForConfirm').first().json.collected_name || 'Patient') + '\\nYour Appointment is confirmed! Thank you.\\nSee you soon at Dental Clinic! 🦷' }}",
+        "additionalFields": {}
+      },
+      "name": "SendFinalConfirmation",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        528,
+        1536
+      ],
+      "id": "6e912797-31ef-4570-8882-3bf604a81a31",
+      "webhookId": "7672bd13-2cf1-4e2f-bf39-44c3aac4028a",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_state WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}';",
+        "options": {}
+      },
+      "id": "950a1467-fb3d-4444-a04c-8b2aeb7c746c",
+      "name": "VerifySlotAvailability",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        2048
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c_avail",
+              "leftValue": "={{ ($json.booked || '').toString().toUpperCase() }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              },
+              "rightValue": "TRUE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6f7b6708-01b2-483b-ba43-41368462fc2c",
+      "name": "IsSlotAvailable",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        2048
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=1018860684640594",
+        "recipientPhoneNumber": "={{ $('BuildContext').first().json.wa_id }}",
+        "textBody": "Sorry! 😔 This time slot was just booked by someone else while you were filling your details.\n\nPlease tap *Menu* to find another available slot.",
+        "additionalFields": {}
+      },
+      "id": "be6a8b15-10ef-4189-be48-4b935443b83a",
+      "name": "SendSlotTakenError",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        432,
+        2144
+      ],
+      "webhookId": "c97e9c32-3149-486c-92a8-73320540cd18",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        928,
+        784
+      ],
+      "id": "fe153b57-5e87-4c1f-a96b-1f0560f22f85",
+      "name": "ReminderWait",
+      "webhookId": "036195c3-0517-42c4-863e-8fcd20d71b62"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM user_state WHERE wa_id = '{{ $(\"BuildContext\").first().json.wa_id }}';",
+        "options": {}
+      },
+      "id": "1ad80b13-3f3d-41c6-9d5d-7395dcceb189",
+      "name": "ReminderStateCheck",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        1136,
+        784
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "dNZhzaaC7BkR3TB7",
+          "name": "Raheel DB1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "check_stuck",
+              "leftValue": "={{ new Date($json.updated_at).getTime() }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              },
+              "rightValue": "={{ new Date().getTime() - 175000 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "inputNames": [
+        "input"
+      ],
+      "id": "c0b7b1e4-530a-4abc-9354-a29fd859c483",
+      "name": "IsUserStillStuck",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1328,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=1018860684640594",
+        "recipientPhoneNumber": "={{ $('BuildContext').first().json.wa_id }}",
+        "textBody": "Thank you for choosing Dential Clinic.\nWe are happy to have assisted you.\nFor further inquiry, please get back to us by call or WhatsApp at our 24/7 Aapki Sehat Ka Number \n0317 4945789.",
+        "additionalFields": {}
+      },
+      "id": "ce81ec0f-2616-4183-89db-0a31093f0bfa",
+      "name": "SendReminderPreface",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1536,
+        784
+      ],
+      "webhookId": "d02c2953-8225-41e4-81b9-c45bd259b8b6",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "30666351-9458-49f1-a9a7-e7f1ee4de238",
+      "name": "ReminderLogicStart",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has_payload",
+              "leftValue": "={{ $json.last_payload }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "eb387c83-577c-4d6e-aae0-96a12b396c93",
+      "name": "ReminderPayloadRouter",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1728,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v18.0/1018860684640594/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.last_payload }}",
+        "options": {}
+      },
+      "id": "4daca785-9e73-415b-81f6-a6ffed0bcb59",
+      "name": "ResendLastUI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1936,
+        784
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "VDxdxPp67uGHQSFQ",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RecieveMessage": {
+      "main": [
+        [
+          {
+            "node": "ExtractFields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExtractFields": {
+      "main": [
+        [
+          {
+            "node": "InitUserState",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InitUserState": {
+      "main": [
+        [
+          {
+            "node": "BuildContext",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuildContext": {
+      "main": [
+        [
+          {
+            "node": "DetermineRoute",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DetermineRoute": {
+      "main": [
+        [
+          {
+            "node": "Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FetchMainMenu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FetchTreatments",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FetchTreatments",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FetchMainMenu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SaveSlotState",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "UpdateAwaitingName",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SaveNameState",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GetStateForBooking",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendCancelMessage",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendTreatmentsInfo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendDoctorContact",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendClinicTimings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FetchMainMenu": {
+      "main": [
+        [
+          {
+            "node": "BuildMenuPayload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuildMenuPayload": {
+      "main": [
+        [
+          {
+            "node": "MenuRoutingSwitch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MenuRoutingSwitch": {
+      "main": [
+        [
+          {
+            "node": "SaveTreatmentState",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendMainMenu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendMainMenu": {
+      "main": [
+        [
+          {
+            "node": "SaveMainMenuState",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ReminderWait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FetchTreatments": {
+      "main": [
+        [
+          {
+            "node": "BuildTreatmentsPayload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuildTreatmentsPayload": {
+      "main": [
+        [
+          {
+            "node": "SendTreatmentsList",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SaveTreatmentState": {
+      "main": [
+        [
+          {
+            "node": "FetchAvailableSlots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FetchAvailableSlots": {
+      "main": [
+        [
+          {
+            "node": "BuildSlotsPayload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuildSlotsPayload": {
+      "main": [
+        [
+          {
+            "node": "SendDateTimeList",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendDateTimeList": {
+      "main": [
+        [
+          {
+            "node": "ReminderWait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SaveSlotState": {
+      "main": [
+        [
+          {
+            "node": "InstantLockSlot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InstantLockSlot": {
+      "main": [
+        [
+          {
+            "node": "UpdateAwaitingName",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetStateForConfirm": {
+      "main": [
+        [
+          {
+            "node": "BuildConfirmPayload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuildConfirmPayload": {
+      "main": [
+        [
+          {
+            "node": "SendConfirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendConfirmation": {
+      "main": [
+        [
+          {
+            "node": "SaveConfirmState",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ReminderWait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ResetState_Welcome": {
+      "main": [
+        [
+          {
+            "node": "FetchMainMenu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SaveNameState": {
+      "main": [
+        [
+          {
+            "node": "GetStateForConfirm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateAwaitingName": {
+      "main": [
+        [
+          {
+            "node": "SendContactForm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendContactForm": {
+      "main": [
+        [
+          {
+            "node": "ReminderWait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CheckDuplicatePhone": {
+      "main": [
+        [
+          {
+            "node": "GetStateForBooking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetStateForBooking": {
+      "main": [
+        [
+          {
+            "node": "VerifySlotAvailability",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AppendAppointment": {
+      "main": [
+        [
+          {
+            "node": "MarkSlotBooked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MarkSlotBooked": {
+      "main": [
+        [
+          {
+            "node": "SendFinalConfirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IsReturningClient": {
+      "main": [
+        [
+          {
+            "node": "SendSuccessReturning",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendSuccessNew",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendSuccessReturning": {
+      "main": [
+        [
+          {
+            "node": "ResetState_Returning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendSuccessNew": {
+      "main": [
+        [
+          {
+            "node": "ResetState_New",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendCancelMessage": {
+      "main": [
+        [
+          {
+            "node": "ResetState_Cancel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AskForPhone": {
+      "main": [
+        [
+          {
+            "node": "CheckDuplicatePhone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "ResetState_Welcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendTreatmentsList": {
+      "main": [
+        [
+          {
+            "node": "UpdateSelectingTreatment",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ReminderWait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendFinalConfirmation": {
+      "main": [
+        [
+          {
+            "node": "ResetState_Returning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VerifySlotAvailability": {
+      "main": [
+        [
+          {
+            "node": "IsSlotAvailable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IsSlotAvailable": {
+      "main": [
+        [
+          {
+            "node": "AppendAppointment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SendSlotTakenError",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendSlotTakenError": {
+      "main": [
+        [
+          {
+            "node": "ResetState_Returning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendReminderPreface": {
+      "main": [
+        [
+          {
+            "node": "ReminderPayloadRouter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReminderPayloadRouter": {
+      "main": [
+        [
+          {
+            "node": "ResendLastUI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FetchMainMenu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "5e3fa725-5e15-4f51-b73c-309317ec252b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f0988284848bee8750d2e5ea65c93f5d7a87f1077479c6b589041c5e3116024f"
+  },
+  "id": "AgnsN9r40gAzXRzn7IsW6",
+  "tags": [
+    {
+      "updatedAt": "2025-12-04T17:20:54.435Z",
+      "createdAt": "2025-12-04T17:20:54.435Z",
+      "id": "KB8E5ltXGPLphmN2",
+      "name": "h1"
+    }
+  ]
+}
